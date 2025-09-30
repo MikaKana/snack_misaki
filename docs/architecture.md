@@ -11,14 +11,14 @@ Snack Misaki は、フロントエンド・バックエンド・LLM の 3 層構
 ```mermaid
 flowchart TD
 
-subgraph Frontend [Frontend (React / TypeScript)]
-F1[ユーザー入力]
-F2[定型文マッチング]
+subgraph Frontend["Frontend (React / TypeScript)"]
+  F1[ユーザー入力]
+  F2[定型文マッチング]
 end
 
-subgraph Backend [Backend (AWS Lambda / Python)]
-B1[小型LLM (llama.cpp / GPT4All)]
-B2[外部LLM API (OpenAI / Bedrock / HuggingFace)]
+subgraph Backend["Backend (AWS Lambda / Python)"]
+  B1[小型LLM (llama.cpp / GPT4All)]
+  B2[外部LLM API (OpenAI / Bedrock / HuggingFace)]
 end
 
 F1 --> F2
