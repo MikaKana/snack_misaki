@@ -1,28 +1,29 @@
 # Snack Misaki — Backend
 
 ## 概要
-バックエンドは **AWS Lambda (Python 3.11, Docker)** をベースに実装されています。  
-Stage 2 以降で利用され、フロントエンドからの入力を受け取り、小型 LLM または外部 LLM API を用いて応答を生成します。
+バックエンドは **RunPod Serverless (GPU, Python 3.11, Docker)** をベースに実装されています。
+Stage 2 以降で利用され、フロントエンドからの入力を受け取り、RunPod 上の小型 LLM または外部 LLM API を用いて応答を生成します。
 
 ---
 
 ## 技術スタック
-- **AWS Lambda (Python 3.11)**: サーバーレス基盤でスケーラブルな処理  
-- **Docker**: ローカル開発およびデプロイの環境統一  
-- **llama.cpp / GPT4All**: 軽量なローカル推論用 LLM  
-- **OpenAI API / AWS Bedrock / HuggingFace Hub**: 外部 LLM API との連携  
+- **RunPod Serverless (GPU, Python 3.11)**: GPU 常駐で低レイテンシなサーバーレス推論
+- **Docker**: ローカル開発およびデプロイの環境統一（RunPod テンプレートとして利用）
+- **Phi-3 Mini / Mistral 7B**: RunPod 上での推論モデル。通常は Phi-3 Mini、課金や利用条件クリア時に Mistral 7B へ切替
+- **OpenAI API / AWS Bedrock / HuggingFace Hub**: 外部 LLM API との連携
 
 ---
 
 ## 機能概要
-1. **イベント受信**  
-   - Lambda ハンドラがフロントエンドからの入力を受け取る  
+1. **イベント受信**
+   - RunPod Serverless エンドポイントがフロントエンドからの入力を受け取る
 
-2. **小型 LLM 呼び出し (Stage 2)**  
-   - 未対応入力を llama.cpp / GPT4All で処理  
+2. **RunPod での小型 LLM 呼び出し (Stage 2)**
+   - 未対応入力を RunPod Serverless 上の Phi-3 Mini で処理
+   - 課金/利用条件を満たす場合、同一 RunPod 環境で Mistral 7B に切り替えて応答
 
-3. **外部 API 呼び出し (Stage 3)**  
-   - 小型 LLM で処理困難な入力は外部 LLM API にエスカレーション  
+3. **外部 API 呼び出し (Stage 3)**
+   - RunPod 上のモデルで処理困難な入力は外部 LLM API にエスカレーション
 
 4. **レスポンス返却**  
    - 処理結果を JSON としてフロントエンドに返す  
@@ -30,27 +31,29 @@ Stage 2 以降で利用され、フロントエンドからの入力を受け取
 ---
 
 ## 実行方法（ローカル）
-### 1. Docker build
+### 1. コンテナイメージのビルド
 ```bash
 docker build -t snack-misaki-backend .
 ```
 
-### 2. Lambda エミュレータ起動
-```bash
-docker run -p 9000:8080 snack-misaki-backend
-```
+### 2. RunPod Serverless への登録
+- ビルドしたイメージをコンテナレジストリへ push
+- RunPod Serverless のテンプレートとして登録し、エンドポイントを作成
 
-### 3. イベント送信
+### 3. エンドポイント呼び出し
 ```bash
-curl -XPOST "http://localhost:9000/2015-03-31/functions/function/invocations" -d '{"input":"こんばんは"}'
+curl -X POST "https://api.runpod.ai/v2/<ENDPOINT_ID>/run" \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer ${RUNPOD_API_KEY}" \
+  -d '{"input":{"text":"こんばんは"}}'
 ```
 
 ---
 
 ## カスタマイズポイント
-- **小型 LLM の切替**: `llama.cpp` または `GPT4All` を選択可能  
-- **外部 API の利用有無**: 環境変数で OpenAI / Bedrock / HuggingFace を切替  
-- **レスポンスロジック**: `app/handler.py` 内で制御  
+- **小型 LLM の切替**: RunPod 上で Phi-3 Mini を基本とし、課金/利用条件で Mistral 7B に自動切替
+- **外部 API の利用有無**: 環境変数で OpenAI / Bedrock / HuggingFace を切替
+- **レスポンスロジック**: `app/handler.py` 内で、条件判定（課金状況・利用閾値）とモデル選択を制御
 
 ---
 

@@ -7,10 +7,10 @@
 - **目的**  
   軽量かつ実用的な会話体験を提供し、コストとスケーラビリティのバランスをとる。  
 
-- **構成**  
-  - フロントエンド: React / TypeScript（Vite ベース）  
-  - バックエンド: AWS Lambda (Python 3.11, Docker)  
-  - LLM: 小型 LLM（llama.cpp / GPT4All）＋ 外部 API (OpenAI / AWS Bedrock / HuggingFace Hub)  
+- **構成**
+  - フロントエンド: React / TypeScript（Vite ベース）
+  - バックエンド: RunPod Serverless (GPU, Python 3.11, Docker)
+  - LLM: 小型 LLM（Phi-3 Mini on RunPod）を基盤に、条件クリア時は Mistral 7B に自動切替。必要に応じて外部 API (OpenAI / AWS Bedrock / HuggingFace Hub) と連携。
 
 - **特徴**  
   - 定型応答と LLM を組み合わせた **ハイブリッド応答**  
@@ -40,8 +40,8 @@ Snack Misaki は **3 段階の進化型プロジェクト** として設計さ�
 1. **フロントエンドのみ**  
    React による定型文レスポンス UI の提供。最小限の PoC。  
 
-2. **バックエンド連携**  
-   AWS Lambda 上で小型 LLM を実行し、未対応入力にも対応可能に。  
+2. **バックエンド連携**
+   RunPod Serverless (GPU) 上で Phi-3 Mini を常駐させ、未対応入力に応答。課金や利用条件を満たした場合は Mistral 7B に切り替えて返答するロジックを追加。
 
 3. **外部 LLM API 連携**  
    OpenAI API / AWS Bedrock / HuggingFace Hub を利用し、高度な応答を実現。  
@@ -52,8 +52,8 @@ Snack Misaki は **3 段階の進化型プロジェクト** として設計さ�
 - [snack-misaki-frontend](https://github.com/MikaKana/snack-misaki-frontend)  
   Vite + React + TypeScript によるフロントエンド  
 
-- [snack-misaki-backend](https://github.com/MikaKana/snack-misaki-backend)  
-  AWS Lambda (Python, Docker) によるバックエンド  
+- [snack-misaki-backend](https://github.com/MikaKana/snack-misaki-backend)
+  RunPod Serverless (GPU, Python, Docker) によるバックエンド
 
 ---
 
