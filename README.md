@@ -10,7 +10,7 @@ Snack Misaki は「スナックのママ」キャラクターを持つ対話型�
 
 - 目的：軽量かつ実用的な会話体験を提供する
 
-- 構成：フロントエンド（React/TypeScript）、バックエンド（AWS Lambda / Python）、複数の LLM（小型 LLM と外部 API）のハイブリッド構成
+- 構成：フロントエンド（React/TypeScript）、バックエンド（RunPod Serverless (GPU) / Python）、複数の LLM（小型 LLM と外部 API）のハイブリッド構成
 
 - 特徴：
 
@@ -25,8 +25,8 @@ Snack Misaki は「スナックのママ」キャラクターを持つ対話型�
 - [snack-misaki-frontend](https://github.com/MikaKana/snack-misaki-frontend)  
   Vite + React + TypeScript によるフロントエンド。定型文レスポンスの UI を提供。
 
-- [snack-misaki-backend](https://github.com/MikaKana/snack-misaki-backend)  
-  AWS Lambda (Python 3.11, Docker) によるバックエンド。小型 LLM および外部 LLM API 連携を担当。
+- [snack-misaki-backend](https://github.com/MikaKana/snack-misaki-backend)
+  RunPod Serverless (GPU, Python 3.11, Docker) によるバックエンド。小型 LLM および外部 LLM API 連携を担当。
 
 ---
 
@@ -51,8 +51,8 @@ Snack Misaki は「スナックのママ」キャラクターを持つ対話型�
 1. **フロントエンドのみ**  
    React で定型文レスポンスを提供
 
-2. **バックエンド連携**  
-   小型 LLM (llama.cpp / GPT4All) を Lambda 内で実行
+2. **バックエンド連携**
+   RunPod Serverless (GPU) で Phi-3 Mini を実行。課金や利用条件を満たしたユーザーには Mistral 7B に切り替えて応答。
 
 3. **外部 LLM API 連携**  
    OpenAI API / AWS Bedrock / HuggingFace Hub を利用した高度応答
