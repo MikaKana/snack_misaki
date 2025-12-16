@@ -32,7 +32,7 @@ Snack Misaki は「スナックのママ」キャラクターを持つ対話型�
   Vite + React + TypeScript によるフロントエンド。定型文レスポンスの UI を提供。
 
 - [snack-misaki-backend](https://github.com/MikaKana/snack-misaki-backend)
-  RunPod Serverless (GPU, Python 3.11, Docker) によるバックエンド。小型 LLM および外部 LLM API 連携を担当。
+  RunPod Serverless (GPU, Python 3.11, Docker) によるバックエンド。小型 LLM API 連携を担当。
 
 ---
 
