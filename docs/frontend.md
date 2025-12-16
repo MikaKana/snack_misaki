@@ -2,8 +2,11 @@
 
 ## 概要
 フロントエンドは **Vite + React + TypeScript** をベースに実装されています。  
-Stage 1 では定型文レスポンスのみを提供し、PoC としての最小限の機能を担います。  
-Stage 2 以降も UI は共通で、バックエンド連携による応答拡張に対応します。
+ユーザーの属性（無料 / 有料 / VIP）を判定し、以下のルートに振り分けます。
+
+- 無料ユーザー: RunPod Serverless (GPU) 上の Phi-3 Mini エンドポイント
+- 有料ユーザー（ログイン必須）: RunPod Serverless (GPU) 上の Mistral 7B エンドポイント
+- VIP ユーザー（ログイン必須）: Claude / GPT など外部 LLM API
 
 ---
 
@@ -22,9 +25,12 @@ Stage 2 以降も UI は共通で、バックエンド連携による応答拡�
    - フロントエンド側でパターンマッチング  
    - 一致した場合は即時レスポンスを返却（低コストで高速応答）  
 
-3. **バックエンド連携**  
-   - Stage 2 以降では未対応入力をバックエンド API へ送信  
-   - 小型 LLM または外部 LLM API からの応答を表示  
+3. **バックエンド/外部 API への振り分け**  
+   - 未対応入力はユーザー属性に応じて送信先を切替
+     - 無料: Phi-3 Mini（RunPod Serverless）
+     - 有料: Mistral 7B（RunPod Serverless）
+     - VIP: Claude / GPT など外部 API
+   - フロントエンドでのログイン状態確認を前提としたルーティング
 
 ---
 
@@ -53,5 +59,5 @@ Stage 2 以降も UI は共通で、バックエンド連携による応答拡�
 ## カスタマイズポイント
 - **定型文追加**: `src/constants/responses.ts` に追記  
 - **UI 拡張**: `src/components/ChatWindow.tsx` を編集  
-- **バックエンド API のエンドポイント**: `.env` または `src/config.ts` で管理  
-
+- **バックエンド/外部 API のエンドポイント**: `.env` または `src/config.ts` で、無料/有料/VIP 向け URL と API Key を管理  
+- **ログイン/プラン判定ロジック**: `src/hooks/useAuth.ts` などでユーザー属性を取得し、送信先を分岐  
