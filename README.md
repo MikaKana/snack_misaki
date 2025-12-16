@@ -10,13 +10,19 @@ Snack Misaki は「スナックのママ」キャラクターを持つ対話型�
 
 - 目的：軽量かつ実用的な会話体験を提供する
 
-- 構成：フロントエンド（React/TypeScript）、バックエンド（RunPod Serverless (GPU) / Python）、複数の LLM（小型 LLM と外部 API）のハイブリッド構成
+- 構成：フロントエンド（React/TypeScript）、バックエンド（RunPod Serverless (GPU) / Python）
+
+- LLM 構成：
+  - **無料ユーザー**: RunPod Serverless (GPU) 上の Phi-3 Mini 専用エンドポイント
+  - **有料ユーザー**: RunPod Serverless (GPU) 上の Mistral 7B 専用エンドポイント
+  - **VIP ユーザー**: Claude / GPT など外部 LLM API へのルーティング
+  - Phi-3 Mini / Mistral 7B は再学習済みモデルへの置換を前提
 
 - 特徴：
 
-  - 定型応答と LLM を組み合わせたコスト最適化
+  - 定型応答と複数エンドポイントを組み合わせたコスト最適化
 
-  - フロントとバックを分離したスケーラブルな開発体制
+  - フロントとバックを分離し、ユーザー属性に応じてモデルを選択するスケーラブル構成
 
   - PoC（FAQ/社内ヘルプデスク/キャラクターボット）から実運用まで拡張可能
 
@@ -48,11 +54,11 @@ Snack Misaki は「スナックのママ」キャラクターを持つ対話型�
 
 ## 開発ステージ
 
-1. **フロントエンドのみ**  
-   React で定型文レスポンスを提供
+1. **フロントエンド → Phi-3 Mini**  
+   未ログインの無料ユーザーを RunPod Serverless (GPU) 上の Phi-3 Mini エンドポイントへルーティング
 
-2. **バックエンド連携**
-   RunPod Serverless (GPU) で Phi-3 Mini を実行。課金や利用条件を満たしたユーザーには Mistral 7B に切り替えて応答。
+2. **フロントエンド（ログイン） → Mistral 7B**  
+   ログイン済みの有料ユーザーを RunPod Serverless (GPU) 上の Mistral 7B エンドポイントへルーティング
 
-3. **外部 LLM API 連携**  
-   OpenAI API / AWS Bedrock / HuggingFace Hub を利用した高度応答
+3. **フロントエンド（ログイン） → 外部 LLM API**  
+   VIP ユーザーを Claude / GPT など外部 API にルーティングし高度応答を提供

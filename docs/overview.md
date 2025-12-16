@@ -10,12 +10,15 @@
 - **構成**
   - フロントエンド: React / TypeScript（Vite ベース）
   - バックエンド: RunPod Serverless (GPU, Python 3.11, Docker)
-  - LLM: 小型 LLM（Phi-3 Mini on RunPod）を基盤に、条件クリア時は Mistral 7B に自動切替。必要に応じて外部 API (OpenAI / AWS Bedrock / HuggingFace Hub) と連携。
+  - LLM: ユーザー属性に応じた 3 ルート
+    - 無料ユーザー: RunPod Serverless (GPU) 上の **Phi-3 Mini** 専用エンドポイント（再学習予定）
+    - 有料ユーザー: RunPod Serverless (GPU) 上の **Mistral 7B** 専用エンドポイント（再学習予定）
+    - VIP ユーザー: **Claude / GPT API** など外部 LLM へルーティング
 
 - **特徴**  
-  - 定型応答と LLM を組み合わせた **ハイブリッド応答**  
-  - フロントとバックを分離した **スケーラブルな開発体制**  
-  - PoC（FAQ / 社内ヘルプデスク / キャラクターボット）から実運用まで拡張可能  
+  - 定型応答に加え、ユーザー属性ごとにエンドポイントを変える **多経路ハイブリッド応答**  
+  - フロントとバックを分離し、RunPod 2 系統 + 外部 LLM へのルーティングをフロントで制御  
+  - PoC（FAQ / 社内ヘルプデスク / キャラクターボット）から有料/ VIP 提供まで拡張可能  
 
 ---
 
@@ -37,14 +40,14 @@
 ## 開発ステージ
 Snack Misaki は **3 段階の進化型プロジェクト** として設計されています。  
 
-1. **フロントエンドのみ**  
-   React による定型文レスポンス UI の提供。最小限の PoC。  
+1. **フロントエンド → Phi-3 Mini**  
+   未ログインの無料ユーザーを RunPod Serverless (GPU) 上の Phi-3 Mini エンドポイントへ送る。
 
-2. **バックエンド連携**
-   RunPod Serverless (GPU) 上で Phi-3 Mini を常駐させ、未対応入力に応答。課金や利用条件を満たした場合は Mistral 7B に切り替えて返答するロジックを追加。
+2. **フロントエンド（ログイン） → Mistral 7B**  
+   ログイン済みの有料ユーザーを RunPod Serverless (GPU) 上の Mistral 7B エンドポイントへルーティング。
 
-3. **外部 LLM API 連携**  
-   OpenAI API / AWS Bedrock / HuggingFace Hub を利用し、高度な応答を実現。  
+3. **フロントエンド（ログイン） → 外部 LLM API**  
+   VIP ユーザーは Claude / GPT など外部 API にルーティングし、高度な応答を提供。  
 
 ---
 
