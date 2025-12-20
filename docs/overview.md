@@ -9,15 +9,17 @@
 
 - **構成**
   - フロントエンド: React / TypeScript（Vite ベース）
-  - バックエンド: RunPod Serverless (GPU, Python 3.11, Docker)
+  - LLM バックエンド: RunPod Serverless (GPU, Python 3.11, Docker)
+  - 認証/決済バックエンド: AWS Lambda + DynamoDB（Cognito 連携 / Stripe 決済）
   - LLM: ユーザー属性に応じた 3 ルート
     - 無料ユーザー: RunPod Serverless (GPU) 上の **Phi-3 Mini** 専用エンドポイント（再学習予定）
-    - 有料ユーザー: RunPod Serverless (GPU) 上の **Mistral 7B** 専用エンドポイント（再学習予定）
-    - VIP ユーザー: **Claude / GPT API** など外部 LLM へルーティング
+    - 有料ユーザー: Cognito ログイン後、Stripe 決済ステータスを認証/決済 API が確認し、RunPod Serverless (GPU) 上の **Mistral 7B** 専用エンドポイントへルーティング（再学習予定）
+    - VIP ユーザー: Stripe の上位プランを認証/決済 API が判定し、**Claude / GPT API** など外部 LLM へルーティング
 
 - **特徴**  
   - 定型応答に加え、ユーザー属性ごとにエンドポイントを変える **多経路ハイブリッド応答**  
   - フロントとバックを分離し、RunPod 2 系統 + 外部 LLM へのルーティングをフロントで制御  
+  - Cognito + Stripe + Lambda + DynamoDB による認証/決済の薄いバックエンドを追加し、プラン判定と LLM ルーティングを連携  
   - PoC（FAQ / 社内ヘルプデスク / キャラクターボット）から有料/ VIP 提供まで拡張可能  
 
 ---
@@ -43,11 +45,12 @@ Snack Misaki は **3 段階の進化型プロジェクト** として設計さ�
 1. **フロントエンド → Phi-3 Mini**  
    未ログインの無料ユーザーを RunPod Serverless (GPU) 上の Phi-3 Mini エンドポイントへ送る。
 
-2. **フロントエンド（ログイン） → Mistral 7B**  
-   ログイン済みの有料ユーザーを RunPod Serverless (GPU) 上の Mistral 7B エンドポイントへルーティング。
+2. **フロントエンド（ログイン） → 認証/決済 API → Mistral 7B**  
+   Cognito でログインし、Stripe の決済結果を認証/決済 API（Lambda + DynamoDB）で確認。  
+   有料ユーザーを RunPod Serverless (GPU) 上の Mistral 7B エンドポイントへルーティング。
 
-3. **フロントエンド（ログイン） → 外部 LLM API**  
-   VIP ユーザーは Claude / GPT など外部 API にルーティングし、高度な応答を提供。  
+3. **フロントエンド（ログイン） → 認証/決済 API → 外部 LLM API**  
+   Stripe の上位プランを持つ VIP ユーザーを認証/決済 API が判定し、Claude / GPT など外部 API にルーティングして高度な応答を提供。  
 
 ---
 
@@ -56,7 +59,10 @@ Snack Misaki は **3 段階の進化型プロジェクト** として設計さ�
   Vite + React + TypeScript によるフロントエンド  
 
 - [snack-misaki-backend](https://github.com/MikaKana/snack-misaki-backend)
-  RunPod Serverless (GPU, Python, Docker) によるバックエンド
+  RunPod Serverless (GPU, Python, Docker) による LLM バックエンド
+
+- （新規追加予定）認証/決済バックエンド  
+  AWS Lambda + DynamoDB による認証/決済 API（Cognito/Stripe 連携）
 
 ---
 
