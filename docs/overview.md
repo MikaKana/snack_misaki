@@ -10,7 +10,7 @@
 - **構成**
   - フロントエンド: React / TypeScript（Vite ベース）
   - LLM バックエンド: RunPod Serverless (GPU, Python 3.11, Docker)
-  - 認証/決済バックエンド: AWS Lambda + DynamoDB（Cognito 連携 / Stripe 決済）
+  - 認証/決済バックエンド: AWS Lambda + DynamoDB（Cognito 連携 / Stripe 決済）※ RunPod の推論エンドポイントとは別ドメイン・別 URL で運用
   - LLM: ユーザー属性に応じた 3 ルート
     - 無料ユーザー: RunPod Serverless (GPU) 上の **Phi-3 Mini** 専用エンドポイント（再学習予定）
     - 有料ユーザー: Cognito ログイン後、Stripe 決済ステータスを認証/決済 API が確認し、RunPod Serverless (GPU) 上の **Mistral 7B** 専用エンドポイントへルーティング（再学習予定）
