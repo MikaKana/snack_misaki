@@ -27,12 +27,12 @@ subgraph AuthBackend["Auth/Billing Backend: API Gateway + Lambda + DynamoDB"]
 end
 
 subgraph Backend["LLM Backend: RunPod Serverless (GPU) + Python"]
-  B1[RunPod エンドポイント\nPhi-3 Mini\n(無料ユーザー向け)]
-  B2[RunPod エンドポイント\nMistral 7B\n(有料ユーザー向け)]
+  B1[RunPod エンドポイント\nPhi-3 Mini\n無料ユーザー向け]
+  B2[RunPod エンドポイント\nMistral 7B\n有料ユーザー向け]
 end
 
 subgraph External["External LLM API"]
-  B3[Claude / GPT API\n(VIP 向け)]
+  B3[Claude / GPT API\nVIP 向け]
 end
 
 F1 --> F2
@@ -43,8 +43,8 @@ F3 -->|ユーザー属性取得| A2
 A2 -->|決済/プラン照会| A4
 A2 -->|ユーザー属性更新| A3
 F3 -->|無料| B1
-F3 -->|有料 (ログイン)| B2
-F3 -->|VIP (ログイン)| B3
+F3 -->|有料・ログイン済み| B2
+F3 -->|VIP・ログイン済み| B3
 B1 --> F1
 B2 --> F1
 B3 --> F1
@@ -86,8 +86,8 @@ A1 --> A2[API Gateway\n+ Lambda]
 A2 -->|決済/サブスク| A4[Stripe]
 A2 -->|プラン保持| A3[DynamoDB]
 A2 --> F3[ユーザー属性返却]
-F3 -->|未対応入力 (無料)| B1[RunPod GPU\nPhi-3 Mini]
-F3 -->|未対応入力 (有料)| B2[RunPod GPU\nMistral 7B]
+F3 -->|未対応入力: 無料| B1[RunPod GPU\nPhi-3 Mini]
+F3 -->|未対応入力: 有料| B2[RunPod GPU\nMistral 7B]
 B1 --> F1
 B2 --> F1
 ```
@@ -110,9 +110,9 @@ A1 --> A2[API Gateway\n+ Lambda]
 A2 -->|決済/サブスク| A4[Stripe]
 A2 -->|プラン保持| A3[DynamoDB]
 A2 --> F3[ユーザー属性返却]
-F3 -->|未対応入力 (無料)| B1[RunPod GPU\nPhi-3 Mini]
-F3 -->|未対応入力 (有料)| B2[RunPod GPU\nMistral 7B]
-F3 -->|未対応入力 (VIP)| B3[外部 LLM API\nClaude / GPT]
+F3 -->|未対応入力: 無料| B1[RunPod GPU\nPhi-3 Mini]
+F3 -->|未対応入力: 有料| B2[RunPod GPU\nMistral 7B]
+F3 -->|未対応入力: VIP| B3[外部 LLM API\nClaude / GPT]
 B1 --> F1
 B2 --> F1
 B3 --> F1
