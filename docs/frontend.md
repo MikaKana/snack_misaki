@@ -2,7 +2,8 @@
 
 ## 概要
 フロントエンドは **Vite + React + TypeScript** をベースに実装されています。  
-ユーザーの属性（無料 / 有料 / VIP）を判定するために **Cognito ログイン + 認証/決済バックエンド（API Gateway + Lambda + DynamoDB, Stripe）** と連携し、以下のルートに振り分けます。
+ユーザーの属性（無料 / 有料 / VIP）を判定するために **Cognito ログイン + 認証/決済バックエンド（API Gateway + Lambda + DynamoDB, Stripe）** と連携し、以下のルートに振り分けます。  
+認証/決済 API の URL と RunPod 推論エンドポイントの URL は別で、ログイン後にプラン照会→推論エンドポイント呼び出しを段階的に行う前提です。
 
 - 無料ユーザー: RunPod Serverless (GPU) 上の Phi-3 Mini エンドポイント
 - 有料ユーザー（ログイン必須）: 認証/決済 API が Stripe 決済を確認し、RunPod Serverless (GPU) 上の Mistral 7B エンドポイントへルーティング
