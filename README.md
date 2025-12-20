@@ -52,6 +52,9 @@ Snack Misaki は「スナックのママ」キャラクターを持つ対話型�
 - [docs/backend.md](docs/backend.md)  
   バックエンドの設計・補足説明
 
+- [docs/auth-billing.md](docs/auth-billing.md)  
+  Cognito + API Gateway + Lambda + DynamoDB + Stripe による認証/決済バックエンドの詳細設計
+
 ---
 
 ## 開発ステージ
