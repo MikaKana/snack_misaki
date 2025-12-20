@@ -10,7 +10,7 @@ Snack Misaki は「スナックのママ」キャラクターを持つ対話型�
 
 - 目的：軽量かつ実用的な会話体験を提供する
 
-- 構成：フロントエンド（React/TypeScript）、バックエンド（RunPod Serverless (GPU) / Python）
+- 構成：フロントエンド（React/TypeScript）、LLM バックエンド（RunPod Serverless (GPU) / Python）、**認証/決済バックエンド（AWS Lambda + DynamoDB, Cognito, Stripe）**
 
 - LLM 構成：
   - **無料ユーザー**: RunPod Serverless (GPU) 上の Phi-3 Mini 専用エンドポイント
@@ -32,7 +32,9 @@ Snack Misaki は「スナックのママ」キャラクターを持つ対話型�
   Vite + React + TypeScript によるフロントエンド。定型文レスポンスの UI を提供。
 
 - [snack-misaki-backend](https://github.com/MikaKana/snack-misaki-backend)
-  RunPod Serverless (GPU, Python 3.11, Docker) によるバックエンド。小型 LLM API 連携を担当。
+  RunPod Serverless (GPU, Python 3.11, Docker) による LLM バックエンド。小型 LLM API 連携を担当。
+- （新規追加予定）**認証/決済バックエンド**  
+  AWS Lambda + DynamoDB による軽量 API。Cognito で認証、Stripe で決済/サブスクを管理し、ユーザー属性をフロントに返却。
 
 ---
 
@@ -57,8 +59,8 @@ Snack Misaki は「スナックのママ」キャラクターを持つ対話型�
 1. **フロントエンド → Phi-3 Mini**  
    未ログインの無料ユーザーを RunPod Serverless (GPU) 上の Phi-3 Mini エンドポイントへルーティング
 
-2. **フロントエンド（ログイン） → Mistral 7B**  
-   ログイン済みの有料ユーザーを RunPod Serverless (GPU) 上の Mistral 7B エンドポイントへルーティング
+2. **フロントエンド（ログイン） → 認証/決済 API → Mistral 7B**  
+   Cognito でログイン、Stripe で決済ステータスを確認し、有料ユーザーを RunPod Serverless (GPU) 上の Mistral 7B エンドポイントへルーティング
 
-3. **フロントエンド（ログイン） → 外部 LLM API**  
-   VIP ユーザーを Claude / GPT など外部 API にルーティングし高度応答を提供
+3. **フロントエンド（ログイン） → 認証/決済 API → 外部 LLM API**  
+   Stripe で上位プランを持つ VIP ユーザーを認証/決済 API が判定し、Claude / GPT など外部 API にルーティングして高度応答を提供
