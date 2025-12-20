@@ -3,6 +3,7 @@
 ## 概要
 バックエンドは **LLM 推論用 (RunPod Serverless, GPU, Python 3.11, Docker)** と **認証/決済用 (AWS Lambda + DynamoDB)** の 2 系統で構成されています。  
 **認証/決済 API と RunPod 推論エンドポイントは別ドメイン・別 URL で運用** し、フロントエンドが用途ごとに呼び分けます。Cognito でログインし、Stripe の決済結果を認証/決済 API で参照してプランを判定したうえで、RunPod 上の 2 系統エンドポイント（Phi-3 Mini / Mistral 7B）と、VIP 向けの外部 LLM API へ振り分けます。
+認証/決済バックエンドの API 仕様や DynamoDB スキーマなど詳細は [`auth-billing.md`](./auth-billing.md) を参照してください。
 
 ---
 
